@@ -106,10 +106,10 @@ int main() {
 		}
     }
 	
-    // Guarda el resultado en un nuevo archivo
+    // Save audio in new file
     const char* archivoSalida = "audio_resultado.wav";
     SF_INFO infoSalida = infoOriginal;
-    infoSalida.channels = 2;  // Set number of channels in 2 (estéreo)
+    infoSalida.channels = 2;  // Set number of channels in 2 (stereo)
 
     SNDFILE* archivoSalidaSF = sf_open(archivoSalida, SFM_WRITE, &infoSalida);
     if (!archivoSalidaSF) {
