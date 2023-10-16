@@ -6,7 +6,7 @@
 /*   By: imurugar <imurugar@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 09:52:14 by imurugar          #+#    #+#             */
-/*   Updated: 2023/10/16 11:06:29 by imurugar         ###   ########.fr       */
+/*   Updated: 2023/10/16 11:08:30 by imurugar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,11 +103,11 @@ int main() {
 	///////////////////////////
 
 	// Merge both channels in new one, i think i dont need if i merge directly in apropiate channel
-    std::vector<double> canalCombinado(infoOriginal.channels * infoOriginal.frames);  // stereo size
-    for (int i = 0; i < (infoOriginal.frames); i++) {
-        canalCombinado[i] = twoChannels[i];  // left channel
-        //canalCombinado[i * 2 + 1] = canalDerecho[i];  // right channel
-    }
+    // std::vector<double> canalCombinado(infoOriginal.channels * infoOriginal.frames);  // stereo size
+    // for (int i = 0; i < (infoOriginal.frames); i++) {
+    //     canalCombinado[i] = twoChannels[i];  // left channel
+    //     //canalCombinado[i * 2 + 1] = canalDerecho[i];  // right channel
+    // }
 
     // Guarda el resultado en un nuevo archivo
     const char* archivoSalida = "audio_resultado.wav";
@@ -120,7 +120,7 @@ int main() {
         return 1;
     }
 
-    sf_writef_double(archivoSalidaSF, canalCombinado.data(), infoOriginal.frames);
+    sf_writef_double(archivoSalidaSF, twoChannels.data(), infoOriginal.frames);
     sf_close(archivoSalidaSF);
 
     return 0;
