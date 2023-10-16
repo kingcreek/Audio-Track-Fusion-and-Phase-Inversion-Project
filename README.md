@@ -1,29 +1,26 @@
 # Audio Track Fusion and Phase Inversion Project
 
-This project combines audio tracks to create a unique auditory experience. It allows you to merge an original stereo music track with two phase-inverted audio tracks, resulting in a distinctive audio composition.
-
 ## Overview
 
-The goal of this project is to demonstrate the process of combining audio tracks, inverting the phase of one track, and then fusing them together. The result is a stereo audio composition with unique sound characteristics.
+This project is a project with no real-world utility, but it serves as a test for working with the "libsndfile" library. Its aim is to demonstrate a peculiar behavior when playing audio on different types of audio output devices, particularly stereo and mono speakers.
 
-## Getting Started
-
-To get started with this project, follow these steps:
-
-1. Clone the repository to your local machine.
-2. Compile and run the C++ code using the provided audio files.
-3. Experiment with different audio tracks and configurations to explore the effects of phase inversion and audio fusion.
-
-## Prerequisites
-
-- C++ development environment
-- LibSndfile library for audio file handling
-- PortAudio library for audio playback (if necessary)
-- Audio files for the original music track and the phase-inverted tracks
+In stereo mode, the project will play both the primary audio and a hidden audio track, combining them for a unique auditory experience. However, on mono speakers, only the primary audio will be heard.
 
 ## Usage
 
-Modify the code and audio files as needed to achieve the desired audio fusion results. You can adjust the audio files and the combination process to experiment with different soundscapes.
+To use this project:
+
+1. Clone the repository to your local machine.
+
+2. Compile the program by running the `make` command.
+
+3. Execute the program, specifying the paths to the audio files you want to process. For example:
+
+```
+./Sound audio_original.wav audio_hidden.wav
+```
+
+Replace "audio_original.wav" and "audio_hidden.wav" with the paths to your audio files.
 
 ## Acknowledgments
 
