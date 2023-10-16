@@ -6,7 +6,7 @@
 /*   By: imurugar <imurugar@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 09:52:14 by imurugar          #+#    #+#             */
-/*   Updated: 2023/10/16 11:08:30 by imurugar         ###   ########.fr       */
+/*   Updated: 2023/10/16 11:15:05 by imurugar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,13 @@ int main() {
     std::vector<double> twoChannels(infoOriginal.channels * infoOriginal.frames);
     //std::vector<double> canalDerecho(infoOriginal.channels * infoOriginal.frames);
 
-	std::cout << "input 1" << std::endl;
+	std::cout << " input 1 " << std::endl;
     std::cout << " frames: " << infoOriginal.frames << std::endl;
     std::cout << " samplerate: " << infoOriginal.samplerate << std::endl;
     std::cout << " channels: " << infoOriginal.channels << std::endl;
     std::cout << " format: " << infoOriginal.format << std::endl;
     // Read frame chanel
-    sf_readf_double(archivoSF, twoChannels.data(), infoOriginal.frames);
+    sf_readf_double(archivoSF, twoChannels.data(), infoOriginal.channels * infoOriginal.frames);
     //sf_readf_double(archivoSF, canalDerecho.data(), infoOriginal.frames);
 
     // Close file
@@ -61,7 +61,7 @@ int main() {
         return 1;
     }
 	
-	std::cout << "input 2" << std::endl;
+	std::cout << " input 2 " << std::endl;
     std::cout << " frames: " << infoInverso2.frames << std::endl;
     std::cout << " samplerate: " << infoInverso2.samplerate << std::endl;
     std::cout << " channels: " << infoInverso2.channels << std::endl;
@@ -71,23 +71,26 @@ int main() {
     std::vector<double> audioInverso2(infoInverso2.channels * infoInverso2.frames);
 	std::vector<double> audioInverso2inverted(infoInverso2.channels * infoInverso2.frames);
 	
-    sf_readf_double(archivoInverso2SF, audioInverso2.data(), infoInverso2.frames);
-	sf_readf_double(archivoInverso2SF, audioInverso2inverted.data(), infoInverso2.frames);
+    sf_readf_double(archivoInverso2SF, audioInverso2.data(), infoInverso2.channels * infoInverso2.frames);
+	//sf_readf_double(archivoInverso2SF, audioInverso2inverted.data(), infoInverso2.channels * infoInverso2.frames);
     sf_close(archivoInverso2SF);
 
     // Reverse wave from second file
     for (std::size_t i = 0; i < audioInverso2inverted.size(); i++) {
-        audioInverso2inverted[i] = -audioInverso2inverted[i];
+        audioInverso2inverted[i] = -audioInverso2[i];
     }
-
+	
+	double factorVolumeReduccion = 0.5;
+	
     // Merge two channels, currently i literaly combine both, maybe works better with interleave
     for (std::size_t i = 0; i < twoChannels.size(); i++) {
 		if(i < audioInverso2.size() && i < audioInverso2inverted.size())
 		{
 			if (i % 2 == 0)
-				twoChannels[i] += audioInverso2inverted[i];
+				twoChannels[i] += audioInverso2inverted[i] - 0x70;
 			else
-				twoChannels[i] += audioInverso2[i];
+				twoChannels[i] += audioInverso2[i] - 0x70;
+			twoChannels[i] *= factorVolumeReduccion;
 		}
     }
 
