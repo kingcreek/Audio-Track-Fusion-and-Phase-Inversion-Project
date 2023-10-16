@@ -6,7 +6,7 @@
 /*   By: imurugar <imurugar@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 09:52:14 by imurugar          #+#    #+#             */
-/*   Updated: 2023/10/16 11:15:05 by imurugar         ###   ########.fr       */
+/*   Updated: 2023/10/16 17:15:18 by imurugar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ int main() {
     std::cout << " format: " << infoOriginal.format << std::endl;
     // Read frame chanel
     sf_readf_double(archivoSF, twoChannels.data(), infoOriginal.channels * infoOriginal.frames);
-    //sf_readf_double(archivoSF, canalDerecho.data(), infoOriginal.frames);
 
     // Close file
     sf_close(archivoSF);
@@ -67,51 +66,46 @@ int main() {
     std::cout << " channels: " << infoInverso2.channels << std::endl;
     std::cout << " format: " << infoInverso2.format << std::endl;
 	
-    // Read samples from second audio
-    std::vector<double> audioInverso2(infoInverso2.channels * infoInverso2.frames);
-	std::vector<double> audioInverso2inverted(infoInverso2.channels * infoInverso2.frames);
 	
-    sf_readf_double(archivoInverso2SF, audioInverso2.data(), infoInverso2.channels * infoInverso2.frames);
-	//sf_readf_double(archivoInverso2SF, audioInverso2inverted.data(), infoInverso2.channels * infoInverso2.frames);
+	
+    // Read samples from second audio
+    std::vector<double> secondSound(infoInverso2.channels * infoInverso2.frames);
+	
+    sf_readf_double(archivoInverso2SF, secondSound.data(), infoInverso2.channels * infoInverso2.frames);
     sf_close(archivoInverso2SF);
 
-    // Reverse wave from second file
-    for (std::size_t i = 0; i < audioInverso2inverted.size(); i++) {
-        audioInverso2inverted[i] = -audioInverso2[i];
-    }
+	double *audioOut = new double[infoInverso2.frames];
+	if (infoInverso2.channels == 2)
+	{
+    	for(int i = 0; i < infoInverso2.frames; i++)
+    	{
+        	audioOut[i] = 0;
+        	for(int j = 0; j < infoInverso2.channels; j++)
+            	audioOut[i] += secondSound[i*infoInverso2.channels + j];
+        	audioOut[i] /= infoInverso2.channels;
+    	}
+	}
+	else{
+		for(int i = 0; i < infoInverso2.frames; i++)
+			audioOut[i] += secondSound[i];
+	}
+	
 	
 	double factorVolumeReduccion = 0.5;
-	
-    // Merge two channels, currently i literaly combine both, maybe works better with interleave
-    for (std::size_t i = 0; i < twoChannels.size(); i++) {
-		if(i < audioInverso2.size() && i < audioInverso2inverted.size())
+	double factorVolumeReduccion1 = 0.6;
+	int k = 0;
+	for (std::size_t i = 0; i < twoChannels.size(); i++) {
+		if(i < (std::size_t)infoInverso2.frames)
 		{
+			twoChannels[i] *= factorVolumeReduccion1;
 			if (i % 2 == 0)
-				twoChannels[i] += audioInverso2inverted[i] - 0x70;
+				twoChannels[i] += audioOut[k];
 			else
-				twoChannels[i] += audioInverso2[i] - 0x70;
+				twoChannels[i] += -(audioOut[k++]);
 			twoChannels[i] *= factorVolumeReduccion;
 		}
     }
-
-    // merge second to other channel
-    // for (std::size_t i = 0; i < canalDerecho.size(); i++) {
-	// 	if(!audioInverso2[i])
-	// 		break;
-    //     canalDerecho[i] += audioInverso2[i];
-    // }
-
-    ///////////////////////////
-	//Save result in new .wav//
-	///////////////////////////
-
-	// Merge both channels in new one, i think i dont need if i merge directly in apropiate channel
-    // std::vector<double> canalCombinado(infoOriginal.channels * infoOriginal.frames);  // stereo size
-    // for (int i = 0; i < (infoOriginal.frames); i++) {
-    //     canalCombinado[i] = twoChannels[i];  // left channel
-    //     //canalCombinado[i * 2 + 1] = canalDerecho[i];  // right channel
-    // }
-
+	
     // Guarda el resultado en un nuevo archivo
     const char* archivoSalida = "audio_resultado.wav";
     SF_INFO infoSalida = infoOriginal;
